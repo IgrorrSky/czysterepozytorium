@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Star Wars Quiz</title>
+<style>
+body{background:black;color:white;font-family:monospace}
+h1{color:yellow;font-size:16px}
+button{margin:3px;padding:5px;background:#222;color:white}
+#crawl{margin:10px 0;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<h1>STAR WARS QUIZ</h1>
+<button id="new">Nowy</button>
+<div id="crawl">Ładowanie...</div>
+<div id="buttons"></div>
+<div id="status"></div>
+<script>
+let films=[]
+let current=null
+let crawl=document.getElementById("crawl")
+let stat=document.getElementById("status")
+fetch("https://swapi.dev/api/films/").then(r=>r.json()).then(d=>{
+  films=d.results.sort((a,b)=>a.episode_id-b.episode_id)
+  let box=document.getElementById("buttons")
+  films.forEach(f=>{
+    let b=document.createElement("button")
+    b.innerText="Ep "+f.episode_id
+    b.onclick=()=>check(f.episode_id)
+    box.appendChild(b)
+  })
+  newFilm()
+})
+function newFilm(){
+  current=films[Math.floor(Math.random()*films.length)]
+  crawl.innerText=current.opening_crawl
+  stat.innerText=""
+}
+function check(id){
+  if(id==current.episode_id){
+    stat.innerText="Dobrze"
+  } else {
+    stat.innerText="Źle. To był ep "+current.episode_id
+  }
+}
+document.getElementById("new").onclick=newFilm
+</script>
+</body>
+</html>
