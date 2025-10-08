@@ -1,50 +1,120 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="pl">
 <head>
-<meta charset="utf-8">
-<title>Star Wars Quiz</title>
-<style>
-body{background:black;color:white;font-family:monospace}
-h1{color:yellow;font-size:16px}
-button{margin:3px;padding:5px;background:#222;color:white}
-#crawl{margin:10px 0;white-space:pre-wrap}
-</style>
+  <meta charset="UTF-8">
+  <title>Openers</title>
+  <style>
+    body {
+      background-color: black;
+      color: yellow;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    #crawl {
+      position: relative;
+      overflow: hidden;
+      height: 300px;
+      width: 80%;
+      margin: 30px auto;
+      border: 2px solid yellow;
+      background-color: #111;
+    }
+    #text {
+      position: absolute;
+      bottom: -100%;
+      width: 100%;
+      white-space: pre-line;
+      animation: crawl 20s linear infinite;
+    }
+    @keyframes crawl {
+      from { bottom: -100%; }
+      to { bottom: 100%; }
+    }
+    button {
+      background: black;
+      color: yellow;
+      border: 2px solid yellow;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background: yellow;
+      color: black;
+    }
+    #result {
+      margin-top: 15px;
+      font-size: 1.2rem;
+    }
+  </style>
 </head>
 <body>
-<h1>STAR WARS QUIZ</h1>
-<button id="new">Nowy</button>
-<div id="crawl">Ładowanie...</div>
-<div id="buttons"></div>
-<div id="status"></div>
-<script>
-let films=[]
-let current=null
-let crawl=document.getElementById("crawl")
-let stat=document.getElementById("status")
-fetch("https://swapi.dev/api/films/").then(r=>r.json()).then(d=>{
-  films=d.results.sort((a,b)=>a.episode_id-b.episode_id)
-  let box=document.getElementById("buttons")
-  films.forEach(f=>{
-    let b=document.createElement("button")
-    b.innerText="Ep "+f.episode_id
-    b.onclick=()=>check(f.episode_id)
-    box.appendChild(b)
-  })
-  newFilm()
-})
-function newFilm(){
-  current=films[Math.floor(Math.random()*films.length)]
-  crawl.innerText=current.opening_crawl
-  stat.innerText=""
-}
-function check(id){
-  if(id==current.episode_id){
-    stat.innerText="Dobrze"
-  } else {
-    stat.innerText="Źle. To był ep "+current.episode_id
-  }
-}
-document.getElementById("new").onclick=newFilm
-</script>
+  <h1>Quiz Star Wars</h1>
+  <div id="crawl"><div id="text">Ładowanie...</div></div>
+  <div id="choices"></div>
+  <div id="result"></div>
+
+  <script type="module">
+    const apiUrl = "https://swapi.dev/api/films/";
+    let films = [];
+    let currentFilm = null;
+    let startTime = null;
+
+    async function fetchFilms() {
+      const resp = await fetch(apiUrl);
+      const data = await resp.json();
+      films = data.results.sort((a, b) => a.episode_id - b.episode_id);
+    }
+
+    function pickRandomFilm() {
+      const idx = Math.floor(Math.random() * films.length);
+      return films[idx];
+    }
+
+    function startQuiz() {
+      currentFilm = pickRandomFilm();
+      const textEl = document.getElementById("text");
+      textEl.textContent = currentFilm.opening_crawl;
+
+      textEl.style.animation = "none";
+      void textEl.offsetWidth;
+      textEl.style.animation = "crawl 20s linear";
+
+      startTime = Date.now();
+      renderChoices();
+      document.getElementById("result").textContent = "";
+    }
+
+    function renderChoices() {
+      const div = document.getElementById("choices");
+      div.innerHTML = "";
+      films.forEach(f => {
+        const btn = document.createElement("button");
+        btn.textContent = "Epizod " + f.episode_id;
+        btn.onclick = () => checkAnswer(f.episode_id);
+        div.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(ep) {
+      const time = ((Date.now() - startTime) / 1000).toFixed(2);
+      const result = document.getElementById("result");
+      if (ep === currentFilm.episode_id) {
+        result.textContent = " Poprawnie (" + time + " s)";
+      } else {
+        result.textContent = " Zle. To byl epizod " + currentFilm.episode_id;
+      }
+      setTimeout(startQuiz, 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await fetchFilms();
+      startQuiz();
+    });
+  </script>
 </body>
 </html>
+
