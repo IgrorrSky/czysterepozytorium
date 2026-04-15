@@ -6,7 +6,7 @@ Wyświetlany jest fragment prologu Star Wars – Twoim zadaniem jest odgadnąć 
 
 
 
-Blog wordpress motocykle
+Blog wordpress motocykle,
   Witaj na stronie miłośników jednośladów!
 
 Link: 
