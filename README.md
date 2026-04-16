@@ -5,5 +5,5 @@
 Blog wordpress motocykle,
   Witaj na stronie miłośników jednośladów!
 
-Link: 
+Link: **https://www.praktyki.website/?page_id=17**
 
